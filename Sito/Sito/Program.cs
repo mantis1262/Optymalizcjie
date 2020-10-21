@@ -1,42 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sito
 {
     class Program
-    { 
+    {
+
+        const int MAX = 70000000;
+        const int MAXd2 = 35000000;
+        static int max = 0;
         static void Main(string[] args)
         {
+            max = (int)Math.Floor(Math.Sqrt(MAX));
             Stopwatch stopwatch = Stopwatch.StartNew();
-            ulong sum = 0;
-            bool[] NotPrioeNumber = new bool[70000000];
-            Sito(NotPrioeNumber);
+            long sum = 2;
+
+            BitArray bitArray = new BitArray(MAXd2, false);
+            // Sito(bitArray);
+            sito2(bitArray);
             stopwatch.Stop();
             double proc = stopwatch.ElapsedMilliseconds;
             Console.WriteLine(proc);
-            for (uint i = 2; i < 70000000; i++)
+            for (int i = 1; i < MAXd2; i++)
             {
-                if (!NotPrioeNumber[i]) sum += i;
+                if (bitArray[i] == false) sum = sum + (2*i+1);
             }
             Console.WriteLine(sum);
-            GC.Collect();
             Console.Read();
         }
 
-        public static void Sito(bool[] NotPrioeNumber)
+        //public static void Sito(BitArray NotPrioeNumber)
+        //{
+        //    for (int i = 2; i <= max; i++)
+        //    {
+        //        if (NotPrioeNumber[i] == false)
+        //        {
+        //            for (int j = i * i; j < MAX; j += i)
+        //                NotPrioeNumber[j] = true;
+        //        }
+        //    }
+        //}
+
+          public static void sito2(BitArray notPrime)
         {
-            for (uint i = 2; i * i <= 70000000; i++)
+            int i = 1, p = 3, k;
+           for(int q=4; q<MAXd2; i++, p+=2, q+=(p << 1) - 2)
             {
-                if (!NotPrioeNumber[i])
+                if (!notPrime[i])
                 {
-                    for (uint j = i * i; j < 70000000; j += i)
-                        NotPrioeNumber[j] = true;
+                    k = q;
+                    while (k < MAXd2)
+                    {
+                        notPrime[k] = true; k += p;
+                    }
                 }
-            }
+
+            };
         }
 
     }
