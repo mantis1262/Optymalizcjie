@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Numerics;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Potok
+namespace SSE2.MathSSE
 {
-    public class Float4x4
+    class Float4x4SSE
     {
 
-        private Float4[] matrix;
+        private Float4SSE[] matrix;
         #region properties
-        public Float4[] Matrix { get => matrix; set => matrix = value; }
+        public Float4SSE[] Matrix { get => matrix; set => matrix = value; }
 
-        public float M11 { get => matrix[0].X; set => matrix[0].X = value; }  
+        public float M11 { get => matrix[0].X; set => matrix[0].X = value; }
         public float M12 { get => matrix[1].X; set => matrix[1].X = value; }
         public float M13 { get => matrix[2].X; set => matrix[2].X = value; }
         public float M14 { get => matrix[3].X; set => matrix[3].X = value; }
@@ -31,11 +32,11 @@ namespace Potok
         public float M44 { get => matrix[3].W; set => matrix[3].W = value; }
 
         #endregion
-        public Float4x4(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44)
+        public Float4x4SSE(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44)
         {
-            Matrix = new Float4[4];
+            Matrix = new Float4SSE[4];
             for (int i = 0; i < 4; i++)
-                Matrix[i] = new Float4();
+                Matrix[i] = new Float4SSE();
 
             M11 = m11;
             M12 = m12;
@@ -55,7 +56,7 @@ namespace Potok
             M44 = m44;
         }
 
-        public Float4x4(Float4x4 matrix)
+        public Float4x4SSE(Float4x4SSE matrix)
         {
             M11 = matrix.M11;
             M12 = matrix.M12;
@@ -75,9 +76,9 @@ namespace Potok
             M44 = matrix.M44;
         }
 
-        public static Float4x4 Identity 
+        public static Float4x4SSE Identity
         {
-            get => new Float4x4
+            get => new Float4x4SSE
                 (1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
@@ -89,21 +90,21 @@ namespace Potok
             get => (M11 == 1f) && (M22 == 1f) && (M33 == 1f) && (M44 == 1f);
         }
 
-        public void SetTranslation(Float3 vector)
+        public void SetTranslation(Float3SSE vector)
         {
             M14 = vector.X;
             M24 = vector.Y;
             M34 = vector.Z;
         }
 
-        public void SetScale(Float3 vector)
+        public void SetScale(Float3SSE vector)
         {
             M11 = vector.X;
             M22 = vector.Y;
             M33 = vector.Z;
         }
 
-        public void SetColumn(int number, Float4 column)
+        public void SetColumn(int number, Float4SSE column)
         {
             switch (number)
             {
@@ -130,43 +131,43 @@ namespace Potok
             }
         }
 
-        public static Float4x4 operator +(Float4x4 matrix1, Float4x4 matrix2)
+        public static Float4x4SSE operator +(Float4x4SSE matrix1, Float4x4SSE matrix2)
         {
-            return new Float4x4
+            return new Float4x4SSE
                 (matrix1.M11 + matrix2.M11, matrix1.M12 + matrix2.M12, matrix1.M13 + matrix2.M13, matrix1.M14 + matrix2.M14,
                 matrix1.M21 + matrix2.M21, matrix1.M22 + matrix2.M22, matrix1.M23 + matrix2.M23, matrix1.M24 + matrix2.M24,
                 matrix1.M31 + matrix2.M31, matrix1.M32 + matrix2.M32, matrix1.M33 + matrix2.M33, matrix1.M34 + matrix2.M34,
                 matrix1.M41 + matrix2.M41, matrix1.M42 + matrix2.M42, matrix1.M43 + matrix2.M43, matrix1.M44 + matrix2.M44);
         }
 
-        public static Float4x4 operator -(Float4x4 matrix)
+        public static Float4x4SSE operator -(Float4x4SSE matrix)
         {
-            return new Float4x4
+            return new Float4x4SSE
                 (-matrix.M11, -matrix.M12, -matrix.M13, -matrix.M14,
                 -matrix.M21, -matrix.M22, -matrix.M23, -matrix.M24,
                 -matrix.M31, -matrix.M32, -matrix.M33, -matrix.M34,
                 -matrix.M41, -matrix.M42, -matrix.M43, -matrix.M44);
         }
 
-        public static Float4x4 operator -(Float4x4 matrix1, Float4x4 matrix2)
+        public static Float4x4SSE operator -(Float4x4SSE matrix1, Float4x4SSE matrix2)
         {
-            return new Float4x4
+            return new Float4x4SSE
                 (matrix1.M11 - matrix2.M11, matrix1.M12 - matrix2.M12, matrix1.M13 - matrix2.M13, matrix1.M14 - matrix2.M14,
                 matrix1.M21 - matrix2.M21, matrix1.M22 - matrix2.M22, matrix1.M23 - matrix2.M23, matrix1.M24 - matrix2.M24,
                 matrix1.M31 - matrix2.M31, matrix1.M32 - matrix2.M32, matrix1.M33 - matrix2.M33, matrix1.M34 - matrix2.M34,
                 matrix1.M41 - matrix2.M41, matrix1.M42 - matrix2.M42, matrix1.M43 - matrix2.M43, matrix1.M44 - matrix2.M44);
         }
 
-        public static Float4x4 operator *(Float4x4 matrix, float value)
+        public static Float4x4SSE operator *(Float4x4SSE matrix, float value)
         {
-            return new Float4x4
+            return new Float4x4SSE
                 (matrix.M11 * value, matrix.M12 * value, matrix.M13 * value, matrix.M14 * value,
                 matrix.M21 * value, matrix.M22 * value, matrix.M23 * value, matrix.M24 * value,
                 matrix.M31 * value, matrix.M32 * value, matrix.M33 * value, matrix.M34 * value,
                 matrix.M41 * value, matrix.M42 * value, matrix.M43 * value, matrix.M44 * value);
         }
 
-        public static Float4 operator *(Float4x4 matrix, Float4 vector)
+        public static Float4SSE operator *(Float4x4SSE matrix, Float4SSE vector)
         {
             return new Float4
                 (
@@ -177,7 +178,7 @@ namespace Potok
                 );
         }
 
-        public static Float4 operator *(Float4x4 matrix, Float3 vector)
+        public static Float4SSE operator *(Float4x4SSE matrix, Float3SSE vector)
         {
             return new Float4
                 (
@@ -188,9 +189,9 @@ namespace Potok
                 );
         }
 
-        public static Float4x4 operator *(Float4x4 matrix1, Float4x4 matrix2)
+        public static Float4x4SSE operator *(Float4x4SSE matrix1, Float4x4SSE matrix2)
         {
-            return new Float4x4
+            return new Float4x4SSE
                 (
                     matrix1.M11 * matrix2.M11 + matrix1.M12 * matrix2.M21 + matrix1.M13 * matrix2.M31 + matrix1.M14 * matrix2.M41,
                     matrix1.M11 * matrix2.M12 + matrix1.M12 * matrix2.M22 + matrix1.M13 * matrix2.M32 + matrix1.M14 * matrix2.M42,
@@ -214,7 +215,7 @@ namespace Potok
                 );
         }
 
-        public static bool operator ==(Float4x4 matrix1, Float4x4 matrix2)
+        public static bool operator ==(Float4x4SSE matrix1, Float4x4SSE matrix2)
         {
             return
                 (matrix1.M11 == matrix2.M11) && (matrix1.M12 == matrix2.M12) && (matrix1.M13 == matrix2.M13) && (matrix1.M14 == matrix2.M14) &&
@@ -223,7 +224,7 @@ namespace Potok
                 (matrix1.M41 == matrix2.M41) && (matrix1.M42 == matrix2.M42) && (matrix1.M43 == matrix2.M43) && (matrix1.M44 == matrix2.M44);
         }
 
-        public static bool operator !=(Float4x4 matrix1, Float4x4 matrix2)
+        public static bool operator !=(Float4x4SSE matrix1, Float4x4SSE matrix2)
         {
             return
                 (matrix1.M11 != matrix2.M11) && (matrix1.M12 != matrix2.M12) && (matrix1.M13 != matrix2.M13) && (matrix1.M14 != matrix2.M14) &&
@@ -239,5 +240,6 @@ namespace Potok
                 M31.ToString() + ", " + M32.ToString() + ", " + M33.ToString() + ", " + M34.ToString() + "\n" +
                 M41.ToString() + ", " + M42.ToString() + ", " + M43.ToString() + ", " + M44.ToString();
         }
+
     }
 }

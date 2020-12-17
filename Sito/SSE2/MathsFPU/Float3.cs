@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Potok
+namespace SSE2.FPU
 {
     public class Float3
     {
