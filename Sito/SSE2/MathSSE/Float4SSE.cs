@@ -31,9 +31,6 @@ namespace SSE2.MathSSE
 }
     class Float4SSE
     {
-
-  
-
         Vector128<prop> _vector;
        
 
@@ -52,7 +49,8 @@ namespace SSE2.MathSSE
         {
             unsafe 
             { 
-                fixed (prop* ptr = &str)
+                prop
+                fixed (prop* ptr = str)
                 {
 
                 }
