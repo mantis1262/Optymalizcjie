@@ -41,6 +41,16 @@ namespace SSE2.FPU
                 );
         }
 
+        public static Float3 operator +(Float3 v1, float v2)
+        {
+            return new Float3
+                (
+                    v1.X + v2,
+                    v1.Y + v2,
+                    v1.Z + v2
+                );
+        }
+
         public static Float3 operator -(Float3 v)
         {
             return new Float3(-v.X, -v.Y, -v.Z);
@@ -53,6 +63,16 @@ namespace SSE2.FPU
                     v1.X - v2.X,
                     v1.Y - v2.Y,
                     v1.Z - v2.Z
+                );
+        }
+
+        public static Float3 operator -(Float3 v1, float v2)
+        {
+            return new Float3
+                (
+                    v1.X - v2,
+                    v1.Y - v2,
+                    v1.Z - v2
                 );
         }
 
@@ -90,6 +110,16 @@ namespace SSE2.FPU
                     v.Z / value
                 );
         }
+
+        public static Float3 operator /(Float3 v, Float3 value)
+        {
+            return new Float3
+                (
+                    v.X / value.X,
+                    v.Y / value.Y,
+                    v.Z / value.Z
+                );
+        }
         #endregion
         public void Normalize()
         {
@@ -118,5 +148,20 @@ namespace SSE2.FPU
         {   
             return this - normal * (2 * Dot(normal)) ;
         }
+
+        public override string ToString()
+        {
+            return "{" + X + "," + Y + "," + Z + "}";
+        }
+
+        public Float3 saturate()
+        {
+            Float3 result = new Float3(); 
+           result.X = Math.Min(1, Math.Max(0, X));
+           result.Y = Math.Min(1, Math.Max(0, Y));
+           result.Z = Math.Min(1, Math.Max(0, Z));
+            return result;
+        }
+
     }
 }

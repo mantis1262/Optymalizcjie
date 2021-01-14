@@ -55,6 +55,17 @@ namespace SSE2.FPU
                 );
         }
 
+        public static Float4 operator +(Float4 v1, float v2)
+        {
+            return new Float4
+                (
+                    v1.X + v2,
+                    v1.Y + v2,
+                    v1.Z + v2,
+                    v1.W + v2
+                );
+        }
+
         public static Float4 operator -(Float4 v)
         {
             return new Float4(-v.X, -v.Y, -v.Z, -v.W);
@@ -71,6 +82,17 @@ namespace SSE2.FPU
                 );
         }
 
+        public static Float4 operator -(Float4 v1, float v2)
+        {
+            return new Float4
+                (
+                    v1.X - v2,
+                    v1.Y - v2,
+                    v1.Z - v2,
+                    v1.W - v2
+                );
+        }
+
         public static Float4 operator *(Float4 v, float value)
         {
             return new Float4
@@ -82,6 +104,17 @@ namespace SSE2.FPU
                 );
         }
 
+        public static Float4 operator *(Float4 v, Float4 value)
+        {
+            return new Float4
+                (
+                    v.X * value.X,
+                    v.Y * value.Y,
+                    v.Z * value.Z,
+                    v.W * value.W
+                );
+        }
+
         public static Float4 operator /(Float4 v, float value)
         {
             return new Float4
@@ -90,6 +123,17 @@ namespace SSE2.FPU
                     v.Y / value,
                     v.Z / value,
                     v.W / value
+                );
+        }
+
+        public static Float4 operator /(Float4 v, Float4 value)
+        {
+            return new Float4
+                (
+                    v.X / value.X,
+                    v.Y / value.Y,
+                    v.Z / value.Z,
+                    v.W / value.W
                 );
         }
 
@@ -112,6 +156,11 @@ namespace SSE2.FPU
             Y = Y / length;
             Z = Z / length;
             W = W / length;
+        }
+
+        public override string ToString()
+        {
+            return "{" + X + "," + Y + "," + Z +"," + W + "}";
         }
     }
 }

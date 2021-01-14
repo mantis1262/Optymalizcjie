@@ -7,36 +7,14 @@ using System.Text;
 
 namespace SSE2.MathSSE
 {
-
-    public struct prop{
-
-    private float _x;
-    private float _y;
-    private float _z;
-    private float _w;
-
-        public prop(float x, float y, float z, float w)
-        {
-            _x = x;
-            _y = y;
-            _z = z;
-            _w = w;
-        }
-
-        public float X { get => _x; set => _x = value; }
-    public float Y { get => _y; set => _y = value; }
-    public float Z { get => _z; set => _z = value; }
-    public float W { get => _w; set => _w = value; }
-
-}
     class Float4SSE
     {
-        Vector128<prop> _vector;
-       
+        
+        Vector128<float> _vector;
 
-    //    public float Length { get => (float)Math.Sqrt(X * X + Y * Y + Z * Z + W * W); }
+        public Vector128<float> Length { get => Sse.Sqrt(Sse41.DotProduct(_vector,_vector,255)); }
 
-        public Float4SSE Normalized { get { return this / Length; } }
+        public Float4SSE Normalized { get { return new Float4SSE(Sse.Divide(_vector, Length)); } }
 
         public Vector128<float> Vector { get => _vector; set => _vector = value; }
 
@@ -45,100 +23,235 @@ namespace SSE2.MathSSE
 
         }
 
-        public Float4SSE(prop str)
+        public Float4SSE(float[] str)
         {
             unsafe 
-            { 
-                prop
-                fixed (prop* ptr = str)
+            {
+                fixed (float* ptr = &str[0])
                 {
-
+                    _vector = Sse.LoadVector128(ptr);
                 }
-
             }
-
-            Vector = Sse.LoadVector128(str);
-
         }
 
-        public Float4SSE(Float3SSE v, float w)
+        public Float4SSE(Vector128<float> vector)
         {
-            _x = v.X;
-            _y = v.Y;
-            _z = v.Z;
-            _w = w;
+            _vector = vector;
+
         }
+
+        public Float4SSE(Float4SSE vector)
+        {
+            _vector = vector.Vector;
+
+        }
+
 
         #region operator
 
         public static Float4SSE operator +(Float4SSE v1, Float4SSE v2)
         {
-            return new Float4
+            return new Float4SSE
                 (
-                    v1.X + v2.X,
-                    v1.Y + v2.Y,
-                    v1.Z + v2.Z,
-                    v1.W + v2.W
+                    Sse.Add(v1._vector, v2._vector)
                 );
-        }
-
-        public static Float4SSE operator -(Float4SSE v)
-        {
-            return new Float4(-v.X, -v.Y, -v.Z, -v.W);
         }
 
         public static Float4SSE operator -(Float4SSE v1, Float4SSE v2)
         {
-            return new Float4
+            return new Float4SSE
                 (
-                    v1.X - v2.X,
-                    v1.Y - v2.Y,
-                    v1.Z - v2.Z,
-                    v1.W - v2.W
+                    Sse.Subtract(v1.Vector, v2.Vector)
                 );
+        }
+
+        public static Float4SSE operator *(Float4SSE v1, Float4SSE v2)
+        {
+            return new Float4SSE
+                (
+                    Sse.Multiply(v1.Vector, v2.Vector)
+                );
+        }
+
+        public static Float4SSE operator /(Float4SSE v1, Float4SSE v2)
+        {
+            return new Float4SSE
+                (
+                    Sse.Divide(v1.Vector, v2.Vector)
+                );
+        }
+
+
+        //Skalar
+
+        public static Float4SSE operator +(Float4SSE v, float value)
+        {
+            float[] arrayTemp = new float[4] { value, value, value, value };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Add(v._vector, temp)
+                        );
+                }
+            }
+        }
+
+        public static Float4SSE operator +(float value, Float4SSE v)
+        {
+            float[] arrayTemp = new float[4] { value, value, value, value };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Add(v._vector, temp)
+                        );
+                }
+            }
+        }
+
+        public static Float4SSE operator -(Float4SSE v, float value)
+        {
+            float[] arrayTemp = new float[4] { value, value, value, value };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Subtract(v._vector, temp)
+                        );
+                }
+            }
+        }
+
+        public static Float4SSE operator -(Float4SSE v)
+        {
+            float[] arrayTemp = new float[4] { 0, 0, 0, 0 };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Subtract(temp, v._vector)
+                        );
+                }
+            }
         }
 
         public static Float4SSE operator *(Float4SSE v, float value)
         {
-            return new Float4
-                (
-                    v.X * value,
-                    v.Y * value,
-                    v.Z * value,
-                    v.W * value
-                );
+            float[] arrayTemp = new float[4] { value, value, value, value };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Multiply(v._vector, temp)
+                        );
+                }
+            } 
+        }
+
+        public static Float4SSE operator *(float value, Float4SSE v)
+        {
+            float[] arrayTemp = new float[4] { value, value, value, value };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Multiply(v._vector, temp)
+                        );
+                }
+            }
         }
 
         public static Float4SSE operator /(Float4SSE v, float value)
         {
-            return new Float4
-                (
-                    v.X / value,
-                    v.Y / value,
-                    v.Z / value,
-                    v.W / value
-                );
+            float[] arrayTemp = new float[4] { value, value, value, value };
+            unsafe
+            {
+                fixed (float* fptr = &arrayTemp[0])
+                {
+                    Vector128<float> temp = Sse3.LoadVector128(fptr);
+                    return new Float4SSE
+                        (
+                        Sse.Divide(v._vector, temp)
+                        );
+                }
+            }
         }
 
-        public static bool operator ==(Float4SSE left, Float4SSE right)
-        {
-            return (left.X == right.X && left.Y == right.Y && left.Z == right.Z && left.W == right.W);
-        }
-
-        public static bool operator !=(Float4SSE left, Float4SSE right)
-        {
-            return (left.X != right.X || left.Y != right.Y || left.Z != right.Z || left.W != right.W);
-        }
 
         #endregion
 
         public void Normalize()
         {
-            float length = Length;
-            X = X / length;
-            Y = Y / length;
-            Z = Z / length;
-            W = W / length;
+            _vector = Sse.Divide(_vector, Length);
+            
+        }
+
+        public Float4SSE Cross(Float4SSE v)
+        {
+
+
+
+            return new Float4SSE
+               (
+
+               );
+        }
+
+        public Float4SSE Dot(Float4SSE v)
+        {
+            return new Float4SSE
+                (
+                    Sse41.DotProduct(_vector, v._vector, 255)
+                );
+        }
+
+        public Float4SSE Saturat()
+        {
+            float[] max = new float[4] { 1, 1, 1, 1 };
+            float[] min = new float[4] { 0, 0, 0, 0 };
+            unsafe
+            {
+                fixed (float* maxptr = &max[0])
+                fixed (float* minptr = &min[0])
+                {
+                    Vector128<float> mins = Sse3.LoadVector128(maxptr);
+                    Vector128<float> maxs = Sse3.LoadVector128(maxptr);
+                    return new Float4SSE(Sse.Min(maxs, Sse.Max(mins, _vector)));
+                }
+            }
+        }
+
+        public Float4 getFloat()
+        {
+
+            float[] temp = new float[4];
+            unsafe
+            {
+                fixed (float* tempptr = &temp[0])
+                {
+                    Sse3.Store(tempptr, _vector);
+                    return new Float4(temp[0], temp[1], temp[2], temp[3]);
+                }
+            }
         }
 
     }

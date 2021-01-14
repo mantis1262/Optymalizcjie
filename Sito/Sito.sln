@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Punkty", "Punkty\Punkty.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSE2", "SSE2\SSE2.csproj", "{1470F79F-BF58-4019-9834-20E5F6B39A45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSE", "SSE\SSE.csproj", "{1170A9EB-8CB6-48CE-80C6-E1DB01EE3B21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSE", "SSE\SSE.csproj", "{1170A9EB-8CB6-48CE-80C6-E1DB01EE3B21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
